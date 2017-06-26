@@ -29,6 +29,7 @@
                         </manifest>
                     </archive>
                 </configuration>
+
             </plugin>  
 
 
@@ -58,6 +59,7 @@
                 
             </plugin>
 
+
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
@@ -66,7 +68,6 @@
                     <mainClass>com.project.java.App</mainClass>
                 </configuration>
             </plugin>
-
 
         </plugins>
     </build>
