@@ -18,22 +18,45 @@
     <build>
         <plugins>
 
-            <plugin>      <!-- Docker maven plugin -->                 
-      <groupId>com.spotify</groupId>
-      <artifactId>docker-maven-plugin</artifactId>
-      <version>1.0.0</version>
-      <configuration>
-        <imageName>docker_sample</imageName>
-        <dockerDirectory>docker</dockerDirectory>
-        <resources>
-           <resource>
-             <targetPath>/</targetPath>
-             <directory>${project.build.directory}</directory>
-             <include>${project.build.finalName}.jar</include>
-           </resource>
-        </resources>
-      </configuration>
-    </plugin>
+          <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.0.2</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>com.project.java.App</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>  
+
+
+            <plugin>
+                        <groupId>io.fabric8</groupId>
+                        <artifactId>docker-maven-plugin</artifactId>
+                        <version>0.20.1</version>
+                        <configuration>
+                            <images>
+                                <image>
+                                    <name>hellojava</name>
+                                    <build>
+                                        <from>openjdk:latest</from>
+                                        <assembly>
+                                            <descriptorRef>artifact</descriptorRef>
+                                        </assembly>
+                                        <cmd>java -jar maven/${project.name}-${project.version}.jar</cmd>
+                                    </build>
+                                    <run>
+                                        <wait>
+                                            <log>Hello World!</log>
+                                        </wait>
+                                    </run>
+                                </image>
+                            </images>
+                        </configuration>
+                
+            </plugin>
 
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
