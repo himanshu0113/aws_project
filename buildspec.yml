@@ -3,19 +3,26 @@ version: 0.1
 phases:
   install:
     commands:
-      - printenv
-      - docker run -v "$PWD":/usr/src/app -w /usr/src/app node:4 npm install
+      - yum -y groupinstall "Development Tools"
+      - yum -y install libpcap-devel.x86_64 libtool libyaml-devel
+      - gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
+      - mkdir -p /var/task
+  pre_build:
+    commands:
+      - bash codebuild/install_rvm.bash
+      - cp codebuild/cleanup.bash /tmp/
   build:
     commands:
-      - npm run build
+      - echo Build started on `date`
+      - bash codebuild/build_roadworker.bash
   post_build:
     commands:
-      - mkdir -p build
-      - tar jcf build/myApp-$(date +%Y%m%d%H%m%S).tar.bz2 .eslintrc.js .gitignore README.md buildspec.yml package.json serverless.yml src test
-      - npm install -g serverless
-      - serverless -v -s $(echo ${CODEBUILD_INITIATOR} | cut -d'/' -f2 | cut -d'_' -f3) deploy
-
+      - mv /var/task/rvm .
+      - cp codebuild/rvmrc .rvmrc
+      - echo Build completed on `date`
 artifacts:
   files:
-    - build*/**
-  discard-paths: yes
+    - .rvmrc
+    - rvm/**/*
+    - roadwork
+    - lambda_function.py
